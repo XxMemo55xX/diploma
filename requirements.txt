@@ -1,0 +1,6 @@
+Flask==1.1.2
+Flask-pyoidc==3.7.0
+Flask-login==0.5.0
+pandas==1.4.2
+openpyxl==3.0.9
+Flask-WTF==0.15.1
