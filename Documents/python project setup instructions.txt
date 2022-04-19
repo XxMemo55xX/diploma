@@ -1,0 +1,37 @@
+1. utworzyc folder DEV/project i DEV/venv
+2. w ./project shift + PPM - open with powershell win, "git clone {URL}"
+3. w intelij otworzyc folder z projektem - Project Structure w zakladce file -> SDKs -> "+" -> "add Python SDK" -> Location -> nowy folder w ./venv -> OK
+4. Project Settings -> Project -> Project SDK (wybierz poprawny)
+5. w ./venv/{NOWY VENV}/Scripts/activate.ps1 w PowerShell -> "python -m pip install -r {absolute path do requirements.txt} 
+6. w intelij Add Configuration -> python -> set name to {project name}, wkleic Env Variable z pliku 
+
+FLASK
+
+1.7. w edit configuration Module Name: wybierz flask.exe
+1.8. parameters: run --port 8000
+1.9. environment variables przypisane wczesniej o ile sa
+1.10. Python interpreter: Use SDK of module - folder o nazwie projektu
+1.11. interpreter options ----
+1.12. working directory C:\DEV\Project\{project folder}
+1.13. add content roots - yep
+1.14. add source roots - yep
+
+PYTHONUNBUFFERED=1
+FLASK_APP=app.py
+FLASK_ENV=development
+LOGIN_REDIRECT_URL=http://127.0.0.1:8000/admin
+LOGOUT_REDIRECT_URL=http://127.0.0.1:8000/admin
+
+
+
+
+DJANGO
+
+2.7. w edit configuration Module Name: wybierz flask.exe
+2.8. parameters: run --port 8000
+2.9. environment variables przypisane wczesniej o ile sa
+2.10. Python interpreter: Use SDK of module - folder o nazwie projektu
+2.11. interpreter options ----
+2.12. working directory C:\DEV\Project\{project folder}
+2.13. add content roots - yep
+2.14. add source roots - yep
