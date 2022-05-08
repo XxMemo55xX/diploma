@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<body>
+    <div>
+        {% if error %}
+        <h1>Error</h1>
+        {% endif %}
+    </div>
+    <div>
+        <table id="control-panel-template" class="table">
+            <thead>
+            <tr>
+                <th>Data File - template</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><a href='\diploma\module\files\template_files\Template.xlsx'>Download file here</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div><br>
+        <form enctype="multipart/form-data" action="/upload_files" method="post">
+            <div>
+                <h4> <b>Upload data file: </b></h4>
+                <p><input type="file" name="excelfile" accept=".xlsx, .xls"/></p>
+            </div><br>
+            <div>
+                <input type="submit" id="proceed-xlsx-file" class="btn btn btn-primary" value="Proceed the file">
+            </div>
+        </form>
+    </div>
+</body>
+</html>
