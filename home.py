@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, Blueprint, render_template, jsonify, request, redirect, make_response
+from flask import Flask, Blueprint, render_template, jsonify, request, redirect, make_response, send_file
 import pandas as pd
 
 home = Blueprint('home', __name__)
@@ -11,9 +11,23 @@ def index():
     return render_template('home.html')
 
 
+def download(filepath):
+    print(filepath)
+    return send_file(filepath, as_attachment=True)
+
+
+@home.route('/download_template')
+def download_template():
+    path = 'C:/DEV/Project/diploma/files/template_files/Template.xlsx'                                   #dell
+    # path = 'C:/Users/wujec/Desktop/Szymek/CodeProjects/diploma/files/template_files/Template.xlsx'       #lenovo
+    download(path)
+
+
 @home.route('/upload_files', methods=["GET", "POST"])
 def upload():
-    path = 'C:/Users/wujec/Desktop/Szymek/CodeProjects/diploma/files/upload'
+
+    path = 'C:/DEV/Project/diploma/files/upload'           #dell
+    # path = 'C:/Users/wujec/Desktop/Szymek/CodeProjects/diploma/files/upload'       #lenovo
     if request.method == "POST":
         if request.files:
             if len(os.listdir(path)) != 0:
@@ -54,6 +68,10 @@ def upload():
                             lat_value = (data_tab_value.iat[record, 4])
                             long_lat_value = (data_tab_value.iat[record, 5])
                             nip_value = (data_tab_value.iat[record, 6])
+
+                            download(data_file_path)
+
+                            message = "Success! - file will be downloaded"
                     else:
                         message = "Please use the official version of the template file available on main page"
                 else:
