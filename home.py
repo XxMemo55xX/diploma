@@ -20,7 +20,7 @@ def download(filepath):
 def download_template():
     path = 'C:/DEV/Project/diploma/files/template_files/Template.xlsx'                                   #dell
     # path = 'C:/Users/wujec/Desktop/Szymek/CodeProjects/diploma/files/template_files/Template.xlsx'       #lenovo
-    download(path)
+    return download(path)
 
 
 @home.route('/upload_files', methods=["GET", "POST"])
