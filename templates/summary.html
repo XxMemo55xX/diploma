@@ -6,9 +6,13 @@
 </head>
 <body>
 <div>
-    {% if error %}
+    {% if message %}
     <h4 class="header-title">{{ message }}</h4>
     {% endif %}
+
+    <td>
+        <a href="/home"><button class="btn btn-default">return to home page</button></a>
+    </td>
 </div>
 </body>
 </html>

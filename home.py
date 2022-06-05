@@ -1,7 +1,12 @@
 import os
 
 from flask import Flask, Blueprint, render_template, jsonify, request, redirect, make_response, send_file
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
 import pandas as pd
+from openpyxl.workbook import Workbook
+from openpyxl import load_workbook
 
 home = Blueprint('home', __name__)
 
@@ -18,16 +23,18 @@ def download(filepath):
 
 @home.route('/download_template')
 def download_template():
-    path = 'C:/DEV/Project/diploma/files/template_files/Template.xlsx'                                   #dell
-    # path = 'C:/Users/wujec/Desktop/Szymek/CodeProjects/diploma/files/template_files/Template.xlsx'       #lenovo
+    path = 'C:/DEV/Project/diploma/files/template_files/Template.xlsx'
     return download(path)
 
 
 @home.route('/upload_files', methods=["GET", "POST"])
 def upload():
 
-    path = 'C:/DEV/Project/diploma/files/upload'           #dell
-    # path = 'C:/Users/wujec/Desktop/Szymek/CodeProjects/diploma/files/upload'       #lenovo
+    driver_path = "C:/DEV/Project/diploma/webdrivers/chromedriver.exe"
+    chrome_options = webdriver.ChromeOptions()
+    # chrome_options.add_argument("--headless")
+
+    path = 'C:/DEV/Project/diploma/files/upload'
     if request.method == "POST":
         if request.files:
             if len(os.listdir(path)) != 0:
@@ -50,6 +57,9 @@ def upload():
                 reader = pd.read_excel(data_file_path, 'Data', header=None, usecols='A:G')
                 data_col_count = len(reader.columns)
 
+                wb = load_workbook(filename=data_file_path)
+                ws = wb['Data']
+
                 if data_col_count == 7:
                     name = (data_tab_headers.iat[0, 0])
                     address = (data_tab_headers.iat[0, 1])
@@ -60,6 +70,17 @@ def upload():
                     nip = (data_tab_headers.iat[0, 6])
 
                     if name == "Name" and address == "Address" and city == "City" and zip_code == "Zip-code" and lat == "Lat" and long_lat == "Long Lat" and nip == "NIP":
+
+                        ws['I1'] = "S_Name"
+                        ws['J1'] = "S_Address"
+                        ws['K1'] = "S_City"
+                        ws['L1'] = "S_Zip-code"
+                        ws['M1'] = "S_Lat"
+                        ws['N1'] = "S_Long Lat"
+                        ws['O1'] = "S_NIP"
+                        wb.save(data_file_path)
+                        driver_chrome = webdriver.Chrome(executable_path=driver_path)
+
                         for record in range(len(data_tab_value.index)):
                             name_value = (data_tab_value.iat[record, 0])
                             address_value = (data_tab_value.iat[record, 1])
@@ -69,8 +90,36 @@ def upload():
                             long_lat_value = (data_tab_value.iat[record, 5])
                             nip_value = (data_tab_value.iat[record, 6])
 
-                            download(data_file_path)
+                            driver_chrome.get("https://www.google.com/maps/")
 
+# accept the cookies - start
+#                             if record == 0:
+#                                 driver_chrome.find_element(by=By.XPATH, value="/html/body/div[2]/div[2]/div[3]/span/div/div/div/div[3]/button[2]/div").click()
+
+# accept the cookies - end
+
+                            search = driver_chrome.find_element(by=By.NAME, value='q')
+
+# NAME
+
+                            search.send_keys(name_value)
+                            search.send_keys(Keys.RETURN)
+                            data_table = driver_chrome.find_element(by=By.XPATH, value="/html/body/div[7]/div/div[10]/div[2]/div/div/div[2]/div/div[4]/div/div/div/div/div[1]/div/div/div/div/div/div[5]/div/div/div")
+                            temp_address = [td.text for td in data_table.find_elements(by=By.CLASS_NAME, value='fl')]
+                            s_address = temp_address[0]
+
+# ZIP CODE
+                            driver_chrome.get("https://www.google.pl/")
+                            search.send_keys(zip_code_value)
+                            search.send_keys(Keys.RETURN)
+                            data_table = driver_chrome.find_element(by=By.XPATH, value="/html/body/div[7]/div/div[10]/div[2]/div/div/div[2]/div/div[4]/div/div/div/div/div[1]/div/div/div/div/div/div[1]/div/div/div/span[2]")
+                            temp_city = [td.text for td in data_table.find_elements(by=By.CLASS_NAME, value='fl')]
+                            s_city = temp_city[0]
+
+                            print("address: " + s_address)
+                            print("city: " + s_city)
+
+                            wb.save(data_file_path)
                             message = "Success! - file will be downloaded"
                     else:
                         message = "Please use the official version of the template file available on main page"
@@ -83,3 +132,8 @@ def upload():
     else:
         message = "upload filed!"
     return render_template('summary.html', message=message)
+
+
+@home.route('/home')
+def home_return():
+    return render_template('home.html')
