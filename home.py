@@ -1,9 +1,11 @@
 import os
+import time
 
 from flask import Flask, Blueprint, render_template, jsonify, request, redirect, make_response, send_file
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 import pandas as pd
 from openpyxl.workbook import Workbook
 from openpyxl import load_workbook
@@ -93,9 +95,12 @@ def upload():
                             driver_chrome.get("https://www.google.com/maps/")
 
 # accept the cookies - start
-#                             if record == 0:
-#                                 driver_chrome.find_element(by=By.XPATH, value="/html/body/div[2]/div[2]/div[3]/span/div/div/div/div[3]/button[2]/div").click()
-
+                            if record == 0:
+                                time.sleep(2)
+                                try:
+                                    driver_chrome.find_element(by=By.XPATH, value="/html/body/div[2]/div[2]/div[3]/span/div/div/div/div[3]/button[2]/div").click()
+                                except Exception:
+                                    pass
 # accept the cookies - end
 
                             search = driver_chrome.find_element(by=By.NAME, value='q')
@@ -104,9 +109,10 @@ def upload():
 
                             search.send_keys(name_value)
                             search.send_keys(Keys.RETURN)
-                            data_table = driver_chrome.find_element(by=By.XPATH, value="/html/body/div[7]/div/div[10]/div[2]/div/div/div[2]/div/div[4]/div/div/div/div/div[1]/div/div/div/div/div/div[5]/div/div/div")
-                            temp_address = [td.text for td in data_table.find_elements(by=By.CLASS_NAME, value='fl')]
-                            s_address = temp_address[0]
+                            try:
+                                s_address = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[2]/div[1]/div[1]/h2[1]/span').text
+                            except NoSuchElementException:
+                                s_address="No address could be found"
 
 # ZIP CODE
                             driver_chrome.get("https://www.google.pl/")
