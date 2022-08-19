@@ -444,7 +444,8 @@ def zipcode_f_name(driver_chrome, search, name_value):
             temp_zip_code = s_zip_code
             if exception_check == 0:
                 temp_zip_code = temp_zip_code.split(sep=",")[1]
-            s_city = temp_zip_code.split()[1]
+            s_zip_code1 = temp_zip_code.split()[0]
+            s_zip_code = s_zip_code1
     except Exception:
         s_zip_code="N/A"
 
