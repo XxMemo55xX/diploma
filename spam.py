@@ -7,6 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
@@ -14,26 +15,80 @@ from selenium.webdriver.common.action_chains import ActionChains
 import time
 
 
+
 driver_path = "C:/DEV/Project/diploma/webdrivers/chromedriver.exe"
 chrome_options = webdriver.ChromeOptions()
 # chrome_options.add_argument("--headless")
 driver_chrome = webdriver.Chrome(executable_path=driver_path)
-product = "sluchawki JBL bezprzewodowe"
+city_value = "Lublin"
+name_value = "warsaw spire"
+address_value = "Marii Curie-Skłodowskiej 5"
+zip_code_value = "00-630"
+driver_chrome.get("https://www.google.com/maps/")
+
+# accept the cookies - start
+time.sleep(2)
+try:
+    driver_chrome.find_element(by=By.XPATH, value="/html/body/div[2]/div[2]/div[3]/span/div/div/div/div[3]/button[2]/div").click()
+except Exception:
+    pass
+try:
+    driver_chrome.find_element(by=By.XPATH, value="/html/body/c-wiz/div/div/div/div[2]/div[1]/div[3]/div[1]/div[1]/form[2]/div/div/button").click()
+except Exception:
+    pass
+# accept the cookies - end
 
 #====================================================================================================== script
 
-# Allegro
-driver_chrome.get("https://allegro.pl/")
-time.sleep(3)
-
-# allegro cookies
-
-driver_chrome.find_element(by=By.XPATH, value="/html/body/div[3]/div[1]/div/div[2]/div[2]/button[1]").click()
 
 # search
 time.sleep(3)
-search_allegro = driver_chrome.find_element(by=By.XPATH, value='/html/body/div[3]/div[3]/div/div/div/div/div/div[3]/header/div/div/div/div/form/input')
-search_allegro.send_keys(product)
-search_allegro.send_keys(Keys.RETURN)
-result_table = driver_chrome.find_element(by=By.ID, value="search-results")
+
+search = driver_chrome.find_element(by=By.NAME, value='q')
+
+# NAME_VALUE => ADDRESS_VALUE
+
+search.send_keys(name_value)
+search.send_keys(Keys.RETURN)
+time.sleep(2)
+
+try:
+    s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[2]/div[1]/div[1]/h2[2]/span').text
+except NoSuchElementException:
+    s_city="N/A"
+
+if s_city=="N/A" or s_city=="":
+    try:
+        s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[7]/div[2]/button/div[1]/div[2]/div[1]').text
+    except NoSuchElementException:
+        s_city="N/A"
+
+if s_city=="N/A" or s_city=="":
+    try:
+        s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[17]/div[3]/button/div[1]/div[2]/div[1]').text
+    except NoSuchElementException:
+        s_city="N/A"
+
+if s_city=="N/A" or s_city=="":
+    try:
+        s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[9]/div[2]/button/div[1]/div[2]/div[1]').text
+    except NoSuchElementException:
+        s_city="N/A"
+
+if s_city=="N/A" or s_city=="":
+    try:
+        s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[15]/div[3]/button/div[1]/div[2]/div[1]').text
+    except NoSuchElementException:
+        s_city="N/A"
+
+# if s_city!="N/A" or s_city!="":
+#     temp_city = s_city
+#     temp_city1 = temp_city.split(sep=",")[1]
+#     s_city = temp_city1.split()[1]
+
+if s_city=="":
+    s_city="N/A"
+
+print(s_city)
+
 

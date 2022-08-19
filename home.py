@@ -6,6 +6,9 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
 from openpyxl.workbook import Workbook
 from openpyxl import load_workbook
@@ -96,34 +99,41 @@ def upload():
 
 # accept the cookies - start
                             if record == 0:
-                                time.sleep(2)
+                                delay = 10 # seconds
+                                try:
+                                    myElem = WebDriverWait(driver_chrome, delay).until(EC.presence_of_element_located((By.XPATH, '/html/body/c-wiz/div/div/div/div[2]/div[1]/div[3]/div[1]/div[1]/form[2]/div/div/button')))
+                                    time.sleep(1)
+                                except TimeoutException:
+                                    print("Loading took too much time!")
                                 try:
                                     driver_chrome.find_element(by=By.XPATH, value="/html/body/div[2]/div[2]/div[3]/span/div/div/div/div[3]/button[2]/div").click()
+                                except Exception:
+                                    pass
+                                try:
+                                    driver_chrome.find_element(by=By.XPATH, value="/html/body/c-wiz/div/div/div/div[2]/div[1]/div[3]/div[1]/div[1]/form[2]/div/div/button").click()
                                 except Exception:
                                     pass
 # accept the cookies - end
 
                             search = driver_chrome.find_element(by=By.NAME, value='q')
 
-# NAME
-
-                            search.send_keys(name_value)
-                            search.send_keys(Keys.RETURN)
-                            try:
-                                s_address = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[2]/div[1]/div[1]/h2[1]/span').text
-                            except NoSuchElementException:
-                                s_address="No address could be found"
-
-# ZIP CODE
-                            driver_chrome.get("https://www.google.pl/")
-                            search.send_keys(zip_code_value)
-                            search.send_keys(Keys.RETURN)
-                            data_table = driver_chrome.find_element(by=By.XPATH, value="/html/body/div[7]/div/div[10]/div[2]/div/div/div[2]/div/div[4]/div/div/div/div/div[1]/div/div/div/div/div/div[1]/div/div/div/span[2]")
-                            temp_city = [td.text for td in data_table.find_elements(by=By.CLASS_NAME, value='fl')]
-                            s_city = temp_city[0]
+# NAME => ADDRESS
+                            s_address = address_f_name(driver_chrome, search, name_value)
+# ZIP CODE => CITY
+                            s_city = city_f_zipcode(driver_chrome, search, zip_code_value)
+# ADDRESS + CITY => NAME
+                            s_name = name_f_address_city(driver_chrome, search, address_value, city_value)
+# NAME => CITY
+                            s_city1 = city_f_name(driver_chrome, search, name_value)
+# NAME => ZIP CODE
+                            s_zip_code = zipcode_f_name(driver_chrome, search, name_value)
 
                             print("address: " + s_address)
                             print("city: " + s_city)
+                            print("name: " + s_name)
+                            print("city1: " + s_city1)
+                            print("zip code: " + str(s_zip_code))
+                            print("")
 
                             wb.save(data_file_path)
                             message = "Success! - file will be downloaded"
@@ -143,3 +153,301 @@ def upload():
 @home.route('/home')
 def home_return():
     return render_template('home.html')
+
+
+def address_f_name(driver_chrome, search, name_value):
+    try:
+        driver_chrome.find_element(by=By.NAME, value='q').clear()
+    except Exception:
+        pass
+
+    search.send_keys(name_value)
+    search.send_keys(Keys.RETURN)
+
+    delay = 6 # seconds
+    try:
+        myElem = WebDriverWait(driver_chrome, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div')))
+        time.sleep(1)
+    except TimeoutException:
+        print("Loading took too much time!")
+
+    try:
+        s_address = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[7]/div[1]/button/div[1]/div[2]').text
+    except NoSuchElementException:
+        s_address="N/A"
+
+    if s_address=="N/A" or s_address=="":
+        try:
+            s_address = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[7]/div[3]/button/div[1]').text
+        except NoSuchElementException:
+            s_address="N/A"
+
+    if s_address=="N/A" or s_address=="":
+        try:
+            s_address = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[7]/div[3]/button/div[1]/div[2]/div[1]').text
+        except NoSuchElementException:
+            s_address="N/A"
+
+    if s_address=="N/A" or s_address=="":
+        try:
+            s_address = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[2]/div[1]/div[1]/h2[1]/span').text
+        except NoSuchElementException:
+            s_address="N/A"
+
+    if s_address=="N/A" or s_address=="":
+        try:
+            s_address = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[2]/div[1]/div[1]/h2[1]').text
+        except NoSuchElementException:
+            s_address="N/A"
+
+    if s_address=="N/A" or s_address=="":
+        try:
+            s_address = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[9]/div[1]/button/div[1]').text
+        except NoSuchElementException:
+            s_address="N/A"
+
+    if s_address=="":
+        s_address="N/A"
+    return s_address
+
+
+def city_f_zipcode(driver_chrome, search, zip_code_value):
+    try:
+        driver_chrome.find_element(by=By.NAME, value='q').clear()
+    except Exception:
+        pass
+
+    search.send_keys(zip_code_value)
+    search.send_keys(Keys.RETURN)
+
+    delay = 6 # seconds
+    try:
+        myElem = WebDriverWait(driver_chrome, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div')))
+        time.sleep(1)
+    except TimeoutException:
+        print("Loading took too much time!")
+
+    try:
+        s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[2]/div[1]/div[1]/div[1]/h1').text
+    except NoSuchElementException:
+        s_city="N/A"
+
+    if s_city != "N/A":
+        temp_city = s_city
+        s_city = temp_city.split()[1]
+
+    if s_city=="":
+        s_city="N/A"
+    return s_city
+
+
+def name_f_address_city(driver_chrome, search, address_value, city_value):
+    try:
+        driver_chrome.find_element(by=By.NAME, value='q').clear()
+    except Exception:
+        pass
+
+    search.send_keys(address_value + " " + city_value)
+    search.send_keys(Keys.RETURN)
+
+    delay = 6 # seconds
+    try:
+        myElem = WebDriverWait(driver_chrome, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div')))
+        time.sleep(1)
+    except TimeoutException:
+        print("Loading took too much time!")
+
+    try:
+        s_name = driver_chrome.find_element(by=By.CLASS_NAME, value="bfdHYd Ppzolf")
+        s_name = s_name.get_attribute("aria-label")
+    except NoSuchElementException:
+        s_name="N/A"
+
+    if s_name=="N/A" or s_name.upper()==address_value.upper():
+        try:
+            s_name = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[15]/div/div[2]/div[2]/div[1]/div/div/div/div[1]/div/span').text
+        except NoSuchElementException:
+            s_name="N/A"
+
+    if s_name=="N/A" or s_name.upper()==address_value.upper():
+        try:
+            s_name = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[17]/div/div[2]/div[2]/div[1]/div/div/div/div[1]').text
+        except NoSuchElementException:
+            s_name="N/A"
+
+    if s_name=="N/A" or s_name.upper()==address_value.upper():
+        try:
+            s_name = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[17]/div/div[2]/div[2]/div[1]/div/div/div/div[1]').text
+        except NoSuchElementException:
+            s_name="N/A"
+
+    if s_name=="N/A" or s_name.upper()==address_value.upper():
+        try:
+            s_name = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[19]/div/div[2]/div[2]/div[1]/div/div/div/div[1]/div').text
+        except NoSuchElementException:
+            s_name="N/A"
+
+    if s_name=="N/A" or s_name.upper()==address_value.upper():
+        try:
+            s_name = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[15]/div/div[2]/div[2]/div[1]/div/div/div/div[1]/div').text
+        except NoSuchElementException:
+            s_name="N/A"
+
+    if s_name=="N/A" or s_name.upper()==address_value.upper():
+        try:
+            s_name = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[27]/div/div[2]/div[2]/div[1]/div/div/div/div[1]/div').text
+        except NoSuchElementException:
+            s_name="N/A"
+
+    if s_name=="N/A" or s_name.upper()==address_value.upper():
+        try:
+            s_name = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[18]/div/div[2]/div[2]/div[1]/div/div/div/div[1]/div').text
+        except NoSuchElementException:
+            s_name="N/A"
+
+    if s_name=="":
+        s_name="N/A"
+    return s_name
+
+
+def city_f_name(driver_chrome, search, name_value):
+    try:
+        driver_chrome.find_element(by=By.NAME, value='q').clear()
+    except Exception:
+        pass
+    exception_check = 0
+
+    search.send_keys(name_value)
+    search.send_keys(Keys.RETURN)
+
+    delay = 6 # seconds
+    try:
+        myElem = WebDriverWait(driver_chrome, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div')))
+        time.sleep(1)
+    except TimeoutException:
+        print("Loading took too much time!")
+    try:
+        s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[2]/div[1]/div[1]/h2[2]/span').text
+        exception_check = 1
+    except NoSuchElementException:
+        s_city="N/A"
+
+    if s_city=="N/A" or s_city=="":
+        try:
+            s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[7]/div[2]/button/div[1]/div[2]/div[1]').text
+        except NoSuchElementException:
+            s_city="N/A"
+
+    if s_city=="N/A" or s_city=="":
+        try:
+            s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[11]/div[3]/button/div[1]/div[2]/div[1]').text
+        except NoSuchElementException:
+            s_city="N/A"
+
+    if s_city=="N/A" or s_city=="":
+        try:
+            s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[7]/div[3]/button/div[1]/div[2]/div[1]').text
+        except NoSuchElementException:
+            s_city="N/A"
+
+    if s_city=="N/A" or s_city=="":
+        try:
+            s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[17]/div[3]/button/div[1]/div[2]/div[1]').text
+        except NoSuchElementException:
+            s_city="N/A"
+
+    if s_city=="N/A" or s_city=="":
+        try:
+            s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[9]/div[2]/button/div[1]/div[2]/div[1]').text
+        except NoSuchElementException:
+            s_city="N/A"
+
+    if s_city=="N/A" or s_city=="":
+        try:
+            s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[15]/div[3]/button/div[1]/div[2]/div[1]').text
+        except NoSuchElementException:
+            s_city="N/A"
+    try:
+        if s_city!="N/A" or s_city!="":
+            temp_city = s_city
+            if exception_check == 0:
+                temp_city = temp_city.split(sep=",")[1]
+            s_city = temp_city.split()[1]
+    except Exception:
+        s_city="N/A"
+
+    if s_city=="":
+        s_city="N/A"
+    return s_city
+
+
+def zipcode_f_name(driver_chrome, search, name_value):
+    try:
+        driver_chrome.find_element(by=By.NAME, value='q').clear()
+    except Exception:
+        pass
+    exception_check = 0
+
+    search.send_keys(name_value)
+    search.send_keys(Keys.RETURN)
+
+    delay = 6 # seconds
+    try:
+        myElem = WebDriverWait(driver_chrome, delay).until(EC.presence_of_element_located((By.XPATH, '//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div')))
+        time.sleep(1)
+    except TimeoutException:
+        print("Loading took too much time!")
+
+    try:
+        s_zip_code = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[2]/div[1]/div[1]/h2[2]/span').text
+        exception_check = 1
+    except NoSuchElementException:
+        s_zip_code="N/A"
+
+    if s_zip_code=="N/A" or s_zip_code=="":
+        try:
+            s_zip_code = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[7]/div[2]/button/div[1]/div[2]/div[1]').text
+        except NoSuchElementException:
+            s_zip_code="N/A"
+
+    if s_zip_code=="N/A" or s_zip_code=="":
+        try:
+            s_zip_code = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[11]/div[3]/button/div[1]/div[2]/div[1]').text
+        except NoSuchElementException:
+            s_zip_code="N/A"
+
+    if s_zip_code=="N/A" or s_zip_code=="":
+        try:
+            s_zip_code = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[7]/div[3]/button/div[1]/div[2]/div[1]').text
+        except NoSuchElementException:
+            s_zip_code="N/A"
+
+    if s_zip_code=="N/A" or s_zip_code=="":
+        try:
+            s_zip_code = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[17]/div[3]/button/div[1]/div[2]/div[1]').text
+        except NoSuchElementException:
+            s_zip_code="N/A"
+
+    if s_zip_code=="N/A" or s_zip_code=="":
+        try:
+            s_zip_code = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[9]/div[2]/button/div[1]/div[2]/div[1]').text
+        except NoSuchElementException:
+            s_zip_code="N/A"
+
+    if s_zip_code=="N/A" or s_zip_code=="":
+        try:
+            s_zip_code = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[15]/div[3]/button/div[1]/div[2]/div[1]').text
+        except NoSuchElementException:
+            s_zip_code="N/A"
+    try:
+        if s_zip_code!="N/A" or s_zip_code!="":
+            temp_zip_code = s_zip_code
+            if exception_check == 0:
+                temp_zip_code = temp_zip_code.split(sep=",")[1]
+            s_city = temp_zip_code.split()[1]
+    except Exception:
+        s_zip_code="N/A"
+
+    if s_zip_code=="":
+        s_zip_code="N/A"
+    return s_zip_code

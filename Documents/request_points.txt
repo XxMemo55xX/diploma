@@ -1,0 +1,25 @@
+What receive        receive from value             status
+===================================================
+city_value      =                                \|
+					name_value                    | done
+					address_value                 |
+					zip_code_value                | done
+					lat_value + long_lat_value    |
+name_value      =								 \|
+					address_value + city_value    | done
+					lat_value + long_lat_value    |
+address_value   =                                \|
+					name_value                    | done
+					lat_value + long_lat_value    |
+zip_code_value  =                                \|
+					name_value                    | done
+					address_value                 |
+					lat_value + long_lat_value    |
+lat_value       =                                \|
+					name_value                    |
+					address_value                 |
+long_lat_value  =                                \|
+					name_value                    |
+					address_value                 |
+nip_value       =                                \|
+                                                  | ?
