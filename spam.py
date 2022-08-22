@@ -48,43 +48,39 @@ search = driver_chrome.find_element(by=By.NAME, value='q')
 
 # NAME_VALUE => ADDRESS_VALUE
 
-search.send_keys(name_value)
+search.send_keys(address_value)
 search.send_keys(Keys.RETURN)
 time.sleep(2)
 
 try:
-    s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[2]/div[1]/div[1]/h2[2]/span').text
+    s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[2]/div[1]/div[1]/div/div[2]/div[2]/div[1]/div/div/div/div[4]/div').text
 except NoSuchElementException:
     s_city="N/A"
 
 if s_city=="N/A" or s_city=="":
     try:
-        s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[7]/div[2]/button/div[1]/div[2]/div[1]').text
+        s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[2]/div[1]/div[1]/h2/span').text
     except NoSuchElementException:
         s_city="N/A"
 
 if s_city=="N/A" or s_city=="":
     try:
-        s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[17]/div[3]/button/div[1]/div[2]/div[1]').text
+        s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[2]/div[1]/div[1]/h2[3]/span').text
     except NoSuchElementException:
         s_city="N/A"
 
 if s_city=="N/A" or s_city=="":
     try:
-        s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[9]/div[2]/button/div[1]/div[2]/div[1]').text
+        s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[2]/div[1]/div[1]/h2[2]/span').text
     except NoSuchElementException:
         s_city="N/A"
 
-if s_city=="N/A" or s_city=="":
-    try:
-        s_city = driver_chrome.find_element(by=By.XPATH, value='//*[@id="QA0Szd"]/div/div/div[1]/div[2]/div/div[1]/div/div/div[15]/div[3]/button/div[1]/div[2]/div[1]').text
-    except NoSuchElementException:
-        s_city="N/A"
-
-# if s_city!="N/A" or s_city!="":
-#     temp_city = s_city
-#     temp_city1 = temp_city.split(sep=",")[1]
-#     s_city = temp_city1.split()[1]
+try:
+    if s_city!="N/A" or s_city!="":
+        temp_city = s_city
+        s_city = temp_city.split()[1]
+except Exception:
+    s_city="N/A"
 
 if s_city=="":
     s_city="N/A"
