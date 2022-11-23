@@ -13,7 +13,7 @@ address_value   =                                \|
 					lat_value + long_lat_value    |
 zip_code_value  =                                \|
 					name_value                    | done
-					address_value                 | done
+					address_value                 |
 					lat_value + long_lat_value    |
 lat_value       =                                \|
 					name_value                    |

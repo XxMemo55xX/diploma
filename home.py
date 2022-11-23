@@ -90,6 +90,7 @@ def upload():
                         ws['O1'] = "S_NIP"
                         wb.save(data_file_path)
                         driver_chrome = webdriver.Chrome(executable_path=driver_path, options=chrome_options)
+                        driver_chrome.get("https://www.google.com/maps/")
 
                         for record in range(len(data_tab_value.index)):
                             name_value = (data_tab_value.iat[record, 0])
@@ -100,24 +101,9 @@ def upload():
                             long_lat_value = (data_tab_value.iat[record, 5])
                             nip_value = (data_tab_value.iat[record, 6])
 
-                            driver_chrome.get("https://www.google.com/maps/")
-
 # accept the cookies - start
                             if record == 0:
-                                delay_cookie = 10
-                                try:
-                                    myElem = WebDriverWait(driver_chrome, delay_cookie).until(EC.visibility_of_element_located((By.XPATH, '/html/body/c-wiz/div/div/div/div[2]/div[1]/div[3]/div[1]/div[1]/form[2]/div/div/button')))
-                                    time.sleep(1)
-                                except TimeoutException:
-                                    print("Loading took too much time!")
-                                try:
-                                    driver_chrome.find_element(by=By.XPATH, value="/html/body/div[2]/div[2]/div[3]/span/div/div/div/div[3]/button[2]/div").click()
-                                except Exception:
-                                    pass
-                                try:
-                                    driver_chrome.find_element(by=By.XPATH, value="/html/body/c-wiz/div/div/div/div[2]/div[1]/div[3]/div[1]/div[1]/form[2]/div/div/button").click()
-                                except Exception:
-                                    pass
+                                cookies(driver_chrome)
 # accept the cookies - end
 
                             search = driver_chrome.find_element(by=By.NAME, value='q')
@@ -148,6 +134,8 @@ def upload():
 
                             wb.save(data_file_path)
                             message = "Success! - file will be downloaded"
+
+                        driver_chrome.quit()
                     else:
                         message = "Please use the official version of the template file available on main page"
                 else:
@@ -164,6 +152,22 @@ def upload():
 @home.route('/home')
 def home_return():
     return render_template('home.html')
+
+def cookies(driver_chrome):
+    delay_cookie = 10
+    try:
+        myElem = WebDriverWait(driver_chrome, delay_cookie).until(EC.visibility_of_element_located((By.XPATH, '/html/body/c-wiz/div/div/div/div[2]/div[1]/div[3]/div[1]/div[1]/form[2]/div/div/button')))
+        time.sleep(1)
+    except TimeoutException:
+        print("Loading took too much time!")
+    try:
+        driver_chrome.find_element(by=By.XPATH, value="/html/body/div[2]/div[2]/div[3]/span/div/div/div/div[3]/button[2]/div").click()
+    except Exception:
+        pass
+    try:
+        driver_chrome.find_element(by=By.XPATH, value="/html/body/c-wiz/div/div/div/div[2]/div[1]/div[3]/div[1]/div[1]/form[2]/div/div/button").click()
+    except Exception:
+        pass
 
 
 def page_to_load(driver_chrome, delay):
