@@ -118,9 +118,9 @@ def upload():
                             s_city1 = city_f_name(driver_chrome, search, delay, name_value)
 # NAME => ZIP CODE
                             s_zip_code = zipcode_f_name(driver_chrome, search, delay, name_value)
-# CITY => ADDRESS
+#ADDRESS => CITY
                             s_city2 = city_f_address(driver_chrome, search, delay, address_value)
-# ZIP CODE => ADDRESS
+#ADDRESS => ZIP CODE
                             s_zip_code1 = zipcode_f_address(driver_chrome, search, delay, address_value)
 
                             print("address from name: " + s_address)

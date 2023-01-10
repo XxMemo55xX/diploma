@@ -17,7 +17,7 @@ import time
 
 
 
-driver_path = "C:/DEV/Project/diploma/webdrivers/chromedriver.exe"
+driver_path = "/webdrivers/chromedriver.exe"
 chrome_options = webdriver.ChromeOptions()
 # chrome_options.add_argument("--headless")
 driver_chrome = webdriver.Chrome(executable_path=driver_path)
