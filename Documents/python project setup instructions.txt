@@ -35,3 +35,24 @@ DJANGO
 2.12. working directory C:\DEV\Project\{project folder}
 2.13. add content roots - yep
 2.14. add source roots - yep
+
+GIT 
+git fetch --all
+
+# Creates a new branch
+git branch my-backup-branch
+
+# Switch to the new branch.. we'll use it to backup our local changes
+git switch my-backup-branch
+
+# Add all files to a commit
+git add .
+
+# Commit the new branch, so that it is saved
+git commit -m "Backup of branch"
+
+# Switch back to our main branch, `master`
+git switch master
+
+# Force git pull using `git reset --hard`
+git reset --hard origin/master

@@ -28,18 +28,20 @@ def download(filepath):
 
 @home.route('/download_template')
 def download_template():
-    path = 'C:/DEV/Project/diploma/files/template_files/Template.xlsx'
+    os.chdir('C:/DEV/Project/diploma')
+    path = os.path.realpath('files/template_files/Template.xlsx')
     return download(path)
 
 
 @home.route('/upload_files', methods=["GET", "POST"])
 def upload():
 
-    driver_path = "C:/DEV/Project/diploma/webdrivers/chromedriver.exe"
+    os.chdir('C:/DEV/Project/diploma')
+    driver_path = os.path.realpath("webdrivers/chromedriver.exe")
     chrome_options = webdriver.ChromeOptions()
     # chrome_options.add_argument("--headless")
 
-    path = 'C:/DEV/Project/diploma/files/upload'
+    path = os.path.realpath('files/upload')
     if request.method == "POST":
         if request.files:
             if len(os.listdir(path)) != 0:
@@ -75,19 +77,14 @@ def upload():
                     address = (data_tab_headers.iat[0, 1])
                     city = (data_tab_headers.iat[0, 2])
                     zip_code = (data_tab_headers.iat[0, 3])
-                    lat = (data_tab_headers.iat[0, 4])
-                    long_lat = (data_tab_headers.iat[0, 5])
-                    nip = (data_tab_headers.iat[0, 6])
 
-                    if name == "Name" and address == "Address" and city == "City" and zip_code == "Zip-code" and lat == "Lat" and long_lat == "Long Lat" and nip == "NIP":
+                    if name == "Name" and address == "Address" and city == "City" and zip_code == "Zip-code":
 
-                        ws['I1'] = "S_Name"
-                        ws['J1'] = "S_Address"
-                        ws['K1'] = "S_City"
-                        ws['L1'] = "S_Zip-code"
-                        ws['M1'] = "S_Lat"
-                        ws['N1'] = "S_Long Lat"
-                        ws['O1'] = "S_NIP"
+                        ws['F1'] = "S_Name"
+                        ws['G1'] = "S_Address"
+                        ws['H1'] = "S_City"
+                        ws['I1'] = "S_Zip-code"
+
                         wb.save(data_file_path)
                         driver_chrome = webdriver.Chrome(executable_path=driver_path, options=chrome_options)
                         driver_chrome.get("https://www.google.com/maps/")
@@ -97,9 +94,6 @@ def upload():
                             address_value = (data_tab_value.iat[record, 1])
                             city_value = (data_tab_value.iat[record, 2])
                             zip_code_value = (data_tab_value.iat[record, 3])
-                            lat_value = (data_tab_value.iat[record, 4])
-                            long_lat_value = (data_tab_value.iat[record, 5])
-                            nip_value = (data_tab_value.iat[record, 6])
 
 # accept the cookies - start
                             if record == 0:
@@ -122,6 +116,74 @@ def upload():
                             s_city2 = city_f_address(driver_chrome, search, delay, address_value)
 #ADDRESS => ZIP CODE
                             s_zip_code1 = zipcode_f_address(driver_chrome, search, delay, address_value)
+
+                            if name_value == '':
+                                if address_value and city_value:
+                                    s_name = name_f_address_city(driver_chrome, search, delay, address_value, city_value)
+                                    if zip_code_value == '':
+                                        if s_name != "N/A":
+                                            s_zip_code = zipcode_f_name(driver_chrome, search, delay, s_name)
+                                        else:
+                                            s_zip_code = zipcode_f_address(driver_chrome, search, delay, address_value)
+
+                                elif address_value and zip_code:
+                                    s_city = city_f_zipcode(driver_chrome, search, delay, zip_code_value)
+                                    if s_city != "N/A":
+                                        s_name = name_f_address_city(driver_chrome, search, delay, address_value, s_city)
+
+                            elif address_value == '':
+                                if name_value:
+                                    s_address = address_f_name(driver_chrome, search, delay, name_value)
+                                    if city_value == '' and s_address != "N/A":
+                                        s_city = city_f_address(driver_chrome, search, delay, s_address)
+                                    elif city_value == '':
+                                        s_city = city_f_name(driver_chrome, search, delay, name_value)
+                                    if zip_code_value == '' and s_address != "N/A":
+                                        s_zip_code = zipcode_f_address(driver_chrome, search, delay, s_address)
+                                    elif zip_code_value == '':
+                                        s_zip_code = zipcode_f_name(driver_chrome, search, delay, name_value)
+
+                            elif city_value == '':
+
+                                if name_value:
+                                    s_city = city_f_name(driver_chrome, search, delay, name_value)
+                                    if address_value == '':
+                                        s_address = address_f_name(driver_chrome, search, delay, name_value)
+                                        if zip_code_value == '' and s_address != "N/A":
+                                            s_zip_code = zipcode_f_address(driver_chrome, search, delay, s_address)
+
+                                elif address_value:
+                                    s_city = city_f_address(driver_chrome, search, delay, address_value)
+                                    if name_value == '' and s_city != "N/A":
+                                        s_name = name_f_address_city(driver_chrome, search, delay, address_value, s_city)
+                                    elif zip_code_value and s_city == "N/A":
+                                        s_city = city_f_zipcode(driver_chrome, search, delay, zip_code_value)
+                                        if s_name == '':
+                                            s_name = name_f_address_city(driver_chrome, search, delay, address_value, s_city)
+                                    if zip_code_value == '' and s_address != "N/A":
+                                        s_zip_code = zipcode_f_address(driver_chrome, search, delay, address_value)
+
+                                elif zip_code_value:
+                                    s_city = city_f_zipcode(driver_chrome, search, delay, zip_code_value)
+
+                            elif zip_code_value == '':
+                                if name_value:
+                                    s_zip_code = zipcode_f_name(driver_chrome, search, delay, name_value)
+                                    if city_value == '' and s_zip_code != "N/A":
+                                        s_city = city_f_zipcode(driver_chrome, search, delay, s_zip_code)
+                                    elif city_value == '' and address_value != '':
+                                        s_city = city_f_address(driver_chrome, search, delay, address_value)
+                                    if address_value == '':
+                                        s_address = address_f_name(driver_chrome, search, delay, name_value)
+
+                                elif address_value:
+                                    s_zip_code = zipcode_f_address(driver_chrome, search, delay, address_value)
+                                    if city_value == '' and s_zip_code != "N/A":
+                                        s_city = city_f_zipcode(driver_chrome, search, delay, s_zip_code)
+                                    elif city_value == '':
+                                        s_city = city_f_address(driver_chrome, search, delay, address_value)
+                                    if name_value == '' and s_city != "N/A":
+                                        s_name = name_f_address_city(driver_chrome, search, delay, address_value, s_city)
 
                             print("address from name: " + s_address)
                             print("city from zipcode: " + s_city)
