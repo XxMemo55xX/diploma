@@ -1,7 +1,7 @@
 import os
 import time
 
-from flask import Flask, Blueprint, render_template, jsonify, request, redirect, make_response, send_file
+from flask import Flask, Blueprint, render_template, request, send_file
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -12,7 +12,6 @@ from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
 from openpyxl.workbook import Workbook
 from openpyxl import load_workbook
-import math
 
 home = Blueprint('home', __name__)
 
