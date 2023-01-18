@@ -3,16 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <title>Summary</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </head>
-<body style="background-color: darkgray">
-<div>
-    {% if message %}
-    <h4 class="header-title">{{ message }}</h4>
-    {% endif %}
-
-    <td>
-        <a href="/home"><button class="btn btn-default">return to home page</button></a>
-    </td>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col s12 m12">
+            <div class="card blue-grey darken-1">
+                <div class="card-content white-text">
+                    {% if message %}
+                    <span class="card-title">{{ message }}</span>
+                    {% endif %}
+                    <p>As GeoFinderUI developers, we are extremely happy that you are using our tool.</p>
+                </div>
+                <div class="card-action">
+                    {% if check %}
+                    <a href="/download_file"><button class="btn btn-default">Download file here</button></a>
+                    {% endif %}
+                    <a href="/home"><button class="btn btn-default">return to home page</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+    <footer class="page-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col s12">
+                    <h5 class="white-text">Visit my Websites</h5>
+                    <ul>
+                        <li><a class="grey-text text-lighten-3" href="https://www.facebook.com/m3mo.wujec/">Facebook</a></li>
+                        <li><a class="grey-text text-lighten-3" href="https://www.instagram.com/m3mo_w/">Instagram</a></li>
+                        <li><a class="grey-text text-lighten-3" href="https://www.youtube.com/@m3mo_w">Youtube</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <div class="container">
+                © 2023 Copyright s20431/PJAIT
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
